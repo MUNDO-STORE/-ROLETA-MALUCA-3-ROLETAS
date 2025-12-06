@@ -17,7 +17,7 @@
     --pro-green: #28a745; 
     --pro-green-dark: #1e7e34;
     --pro-shadow: rgba(0, 0, 0, 0.15);
-    --audio-control-bg: #343a40; /* Cinza Escuro para o controle de áudio */
+    --audio-control-bg: #343a40; 
   }
 
   /* Keyframes para Animações */
@@ -64,6 +64,9 @@
     margin:6px 0 8px; 
     color:#d60000; 
     font-weight:800;
+    /* Estilo para o novo título longo */
+    line-height: 1.3;
+    padding: 0 10px;
   }
   
   h2{ 
@@ -250,51 +253,16 @@
     padding: 25px 14px;
   }
   
-  /* --- ESTILOS DO CONTROLE DE ÁUDIO PROFISSIONAL --- */
-  /* REMOVIDOS POIS O CONTROLE INTEIRO SERÁ OCULTADO */
-  /*
-  .audio-control-container {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
-    background: var(--audio-control-bg);
-    padding: 10px 15px; 
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transition: transform 0.3s ease;
-  }
-
-  .audio-control-container:hover {
-    transform: scale(1.05);
-  }
-
-  .audio-control-btn {
-    background: var(--accent);
-    color: var(--audio-control-bg);
-    border: none;
-    padding: 8px 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: 700;
-    transition: background 0.2s;
-  }
-
-  .audio-control-btn:hover {
-    background: #e6b300;
-  }
-  */
-
   /* responsive */
   @media (max-width:740px){
     .container{ margin: 20px auto; padding: 20px; }
     .roulette-row{ gap: 20px; }
     .roulette-box{ width: 95%; margin: 0 auto; }
     .purchase-btn{ width: 95%; }
+    
+    h1{
+        font-size: 24px;
+    }
   }
 
 </style>
@@ -307,7 +275,7 @@
   <audio id="loseSound" src="lose.mp3" preload="auto"></audio>
   
   <div class="container">
-    <h1>SUPER ROLETA MALUCA! BOA SORTE!</h1>
+    <h1>SUPER ROLETA MALUCA! SORTEIO DE PACKS PARA ATUALIZAR PENDRIVE E PACK PROFISSIONAL PARA DJ! GANHANDO NA ROLETA VOCÊ COMPRA COM SUPER DESCONTO! BOA SORTE!</h1>
     
     <h2>QUALQUER UMA DAS ROLETA SE GANHAR! VOCÊ COMPRA COM SUPER DESCONTO! SE GANHAR EM QUALQUER ROLETA VOCÊ SERÁ DIRECIONADO AUTOMATICAMENTE PARA MEU WHATSAPP! BOA SORTE!</h2>
     
@@ -404,27 +372,24 @@
   const MAX_TRIES = 3;
   const LOCK_MINUTES = 5;
   const animationTime = 4200;
-  const BASE_VOLUME = 0.5; // Define um volume base fixo
+  const BASE_VOLUME = 0.5;
 
   // Referências aos elementos de áudio
   const bgMusic = document.getElementById('bgMusic');
   const spinSound = document.getElementById('spinSound');
   const winSound = document.getElementById('winSound');
   const loseSound = document.getElementById('loseSound');
-  // audioControlBtn, volumeSlider, volumeIcon removidos.
   
-  let userInteracted = false; // Flag para rastrear a interação do usuário
+  let userInteracted = false; 
 
   // --- Funções de Controle de Áudio ---
   
-  // Tenta tocar a música de fundo. Deve ser chamado após uma interação do usuário.
   function tryPlayBackgroundMusic() {
     if (bgMusic.paused) {
-      bgMusic.volume = BASE_VOLUME; // Define o volume base
+      bgMusic.volume = BASE_VOLUME;
       bgMusic.play()
         .then(() => {
-          // audioControlBtn.textContent = 'Pause'; // Removido
-          updateAudioVolumes(BASE_VOLUME); // Garante que todos os áudios tenham o volume base
+          updateAudioVolumes(BASE_VOLUME);
         })
         .catch(e => {
           console.warn("Música de fundo bloqueada. O usuário precisa interagir manualmente.", e);
@@ -432,34 +397,26 @@
     }
   }
   
-  // toggleBackgroundMusic() removida, pois o botão de controle foi removido.
-  
-  // Novo: Atualiza o volume de todos os elementos de áudio (substituindo a função updateVolume)
   function updateAudioVolumes(newVolume) {
     [bgMusic, spinSound, winSound, loseSound].forEach(audio => {
         if (audio) audio.volume = newVolume;
     });
   }
 
-  // Função que tenta iniciar o áudio de fundo no primeiro clique em qualquer lugar
   function initialUserInteraction() {
     if (!userInteracted) {
         userInteracted = true;
-        updateAudioVolumes(BASE_VOLUME); // Define o volume inicial
+        updateAudioVolumes(BASE_VOLUME);
         tryPlayBackgroundMusic();
-        // Remove este listener após a primeira interação
         document.body.removeEventListener('click', initialUserInteraction);
     }
   }
 
   // Define os listeners
   document.addEventListener('DOMContentLoaded', () => {
-    // Inicializa o volume base para todos os áudios
-    updateAudioVolumes(BASE_VOLUME); 
     
-    // Listener de clique no corpo para iniciar o áudio
+    updateAudioVolumes(BASE_VOLUME); 
     document.body.addEventListener('click', initialUserInteraction);
-
   });
 
 
@@ -476,14 +433,13 @@
   function playWinSound() { playSound(winSound); }
   function playLoseSound() { playSound(loseSound); }
 
-  // --- Lógica da Roleta (Mantida) ---
+  // --- Lógica da Roleta ---
 
   // Util helpers
   function nowMs(){ return Date.now(); }
   function keyTries(id){ return `roleta_tries_${id}`; }
   function keyLockedUntil(id){ return `roleta_lockedUntil_${id}`; }
 
-  // Format mm:ss (código omitido para brevidade, mantendo-se o anterior)
   function formatTime(ms) {
     const totalSeconds = Math.ceil(ms / 1000);
     const minutes = Math.floor(totalSeconds / 60);
@@ -491,7 +447,6 @@
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   }
 
-  // Lock UI for a given button until timestamp (ms) (código omitido para brevidade, mantendo-se o anterior)
   function lockButtonUntil(btn, timerDiv, lockedUntil) {
     btn.disabled = true;
     btn.textContent = 'AGUARDE...';
@@ -510,7 +465,7 @@
     }
 
     const timerInterval = setInterval(updateTimer, 1000);
-    updateTimer(); // Chama imediatamente para evitar atraso
+    updateTimer(); 
   }
 
 
@@ -528,10 +483,8 @@
     if(btn.disabled) return;
     btn.disabled = true;
     
-    // TENTA INICIAR MÚSICA DE FUNDO NO CLIQUE DO BOTÃO (garantia extra)
     tryPlayBackgroundMusic();
     
-    // TOCA O SOM DE GIRO
     playSpinSound(); 
 
     let tries = parseInt(localStorage.getItem(keyTries(rouletteId))) || 0;
@@ -563,6 +516,8 @@
         // TOCA O SOM DE VITÓRIA
         playWinSound();
         
+        // REMOVIDO: Lógica de incrementWinners()
+        
         msg.innerHTML = `<span style="color:var(--success); font-weight:800;">VOCÊ GANHOU! PAGAR ${roulette.dataset.price} 🎉</span>`;
         localStorage.setItem(keyTries(rouletteId), 0);
         triesSpan.textContent = 0;
@@ -593,7 +548,7 @@
     }, animationTime + 50);
   };
 
-  // Funções de Inicialização (código omitido para brevidade, mantendo-se o anterior)
+  // Funções de Inicialização 
   function initRoleta(id){
     const roulette = document.getElementById(id);
     const btn = document.getElementById('spinBtn' + id.replace('roulette', ''));
