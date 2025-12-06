@@ -251,13 +251,15 @@
   }
   
   /* --- ESTILOS DO CONTROLE DE ÁUDIO PROFISSIONAL --- */
+  /* REMOVIDOS POIS O CONTROLE INTEIRO SERÁ OCULTADO */
+  /*
   .audio-control-container {
     position: fixed;
     top: 20px;
     right: 20px;
     z-index: 1000;
     background: var(--audio-control-bg);
-    padding: 8px 12px;
+    padding: 10px 15px; 
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     display: flex;
@@ -285,34 +287,7 @@
   .audio-control-btn:hover {
     background: #e6b300;
   }
-
-  .volume-slider {
-    width: 80px;
-    height: 4px;
-    -webkit-appearance: none;
-    appearance: none;
-    background: #6c757d;
-    border-radius: 5px;
-    outline: none;
-    transition: background 0.2s;
-  }
-
-  .volume-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: var(--card);
-    cursor: pointer;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.4);
-  }
-
-  .volume-icon {
-    color: white;
-    font-size: 18px;
-    line-height: 1; /* Alinhamento vertical do ícone */
-  }
+  */
 
   /* responsive */
   @media (max-width:740px){
@@ -320,16 +295,6 @@
     .roulette-row{ gap: 20px; }
     .roulette-box{ width: 95%; margin: 0 auto; }
     .purchase-btn{ width: 95%; }
-    
-    .audio-control-container {
-        top: 10px;
-        right: 10px;
-        padding: 6px 8px;
-        gap: 8px;
-    }
-    .volume-slider {
-        width: 60px;
-    }
   }
 
 </style>
@@ -340,12 +305,6 @@
   <audio id="spinSound" src="spin.mp3" preload="auto"></audio>
   <audio id="winSound" src="win.mp3" preload="auto"></audio>
   <audio id="loseSound" src="lose.mp3" preload="auto"></audio>
-  
-  <div class="audio-control-container">
-    <span id="volumeIcon" class="volume-icon">🔇</span>
-    <button id="audioControlBtn" class="audio-control-btn">Play</button>
-    <input type="range" min="0" max="1" step="0.1" value="0.5" class="volume-slider" id="volumeSlider">
-  </div>
   
   <div class="container">
     <h1>SUPER ROLETA MALUCA! BOA SORTE!</h1>
@@ -445,15 +404,14 @@
   const MAX_TRIES = 3;
   const LOCK_MINUTES = 5;
   const animationTime = 4200;
-  
-  // Referências aos elementos de áudio e controle
+  const BASE_VOLUME = 0.5; // Define um volume base fixo
+
+  // Referências aos elementos de áudio
   const bgMusic = document.getElementById('bgMusic');
   const spinSound = document.getElementById('spinSound');
   const winSound = document.getElementById('winSound');
   const loseSound = document.getElementById('loseSound');
-  const audioControlBtn = document.getElementById('audioControlBtn');
-  const volumeSlider = document.getElementById('volumeSlider');
-  const volumeIcon = document.getElementById('volumeIcon');
+  // audioControlBtn, volumeSlider, volumeIcon removidos.
   
   let userInteracted = false; // Flag para rastrear a interação do usuário
 
@@ -462,11 +420,11 @@
   // Tenta tocar a música de fundo. Deve ser chamado após uma interação do usuário.
   function tryPlayBackgroundMusic() {
     if (bgMusic.paused) {
-      bgMusic.volume = parseFloat(volumeSlider.value);
+      bgMusic.volume = BASE_VOLUME; // Define o volume base
       bgMusic.play()
         .then(() => {
-          audioControlBtn.textContent = 'Pause';
-          updateVolumeIcon();
+          // audioControlBtn.textContent = 'Pause'; // Removido
+          updateAudioVolumes(BASE_VOLUME); // Garante que todos os áudios tenham o volume base
         })
         .catch(e => {
           console.warn("Música de fundo bloqueada. O usuário precisa interagir manualmente.", e);
@@ -474,51 +432,20 @@
     }
   }
   
-  function toggleBackgroundMusic() {
-    if (bgMusic.paused) {
-      tryPlayBackgroundMusic();
-    } else {
-      bgMusic.pause();
-      audioControlBtn.textContent = 'Play';
-      volumeIcon.textContent = '🔇';
-    }
-  }
-
-  // Atualiza o volume e o ícone
-  function updateVolumeIcon() {
-      const newVolume = parseFloat(volumeSlider.value);
-      if (bgMusic.paused) {
-          volumeIcon.textContent = '🔇';
-      } else if (newVolume == 0) {
-          volumeIcon.textContent = '🔇';
-      } else if (newVolume < 0.5) {
-          volumeIcon.textContent = '🔉';
-      } else {
-          volumeIcon.textContent = '🔊';
-      }
-  }
+  // toggleBackgroundMusic() removida, pois o botão de controle foi removido.
   
-  function updateVolume() {
-    const newVolume = parseFloat(volumeSlider.value);
-    
-    // Atualiza o volume de todos os áudios
+  // Novo: Atualiza o volume de todos os elementos de áudio (substituindo a função updateVolume)
+  function updateAudioVolumes(newVolume) {
     [bgMusic, spinSound, winSound, loseSound].forEach(audio => {
         if (audio) audio.volume = newVolume;
     });
-
-    // Atualiza o ícone
-    updateVolumeIcon();
-    
-    // Se o volume não for zero e o BGM estiver em pause, o botão deve mostrar Play.
-    if (newVolume > 0 && bgMusic.paused) {
-        audioControlBtn.textContent = 'Play';
-    }
   }
-  
+
   // Função que tenta iniciar o áudio de fundo no primeiro clique em qualquer lugar
   function initialUserInteraction() {
     if (!userInteracted) {
         userInteracted = true;
+        updateAudioVolumes(BASE_VOLUME); // Define o volume inicial
         tryPlayBackgroundMusic();
         // Remove este listener após a primeira interação
         document.body.removeEventListener('click', initialUserInteraction);
@@ -527,21 +454,12 @@
 
   // Define os listeners
   document.addEventListener('DOMContentLoaded', () => {
-    // Inicia com volume de 0.5 para todos os áudios
-    updateVolume(); 
+    // Inicializa o volume base para todos os áudios
+    updateAudioVolumes(BASE_VOLUME); 
     
-    // Listener do botão Play/Pause
-    audioControlBtn.addEventListener('click', toggleBackgroundMusic);
-    
-    // Listener do slider de volume
-    volumeSlider.addEventListener('input', updateVolume);
-
     // Listener de clique no corpo para iniciar o áudio
     document.body.addEventListener('click', initialUserInteraction);
 
-    // Garante que o estado inicial do botão seja 'Play'
-    audioControlBtn.textContent = 'Play';
-    volumeIcon.textContent = '🔇';
   });
 
 
@@ -565,11 +483,36 @@
   function keyTries(id){ return `roleta_tries_${id}`; }
   function keyLockedUntil(id){ return `roleta_lockedUntil_${id}`; }
 
-  // Inicializa UI e estados ao carregar (código omitido para brevidade, mantendo-se o anterior)
-
   // Format mm:ss (código omitido para brevidade, mantendo-se o anterior)
+  function formatTime(ms) {
+    const totalSeconds = Math.ceil(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
 
   // Lock UI for a given button until timestamp (ms) (código omitido para brevidade, mantendo-se o anterior)
+  function lockButtonUntil(btn, timerDiv, lockedUntil) {
+    btn.disabled = true;
+    btn.textContent = 'AGUARDE...';
+
+    function updateTimer() {
+        const remainingTime = lockedUntil - nowMs();
+        if (remainingTime <= 0) {
+            clearInterval(timerInterval);
+            timerDiv.textContent = '';
+            btn.disabled = false;
+            btn.textContent = 'GIRAR ROLETA';
+            localStorage.removeItem(keyLockedUntil(btn.id.replace('spinBtn', 'roulette')));
+        } else {
+            timerDiv.textContent = `Tente novamente em ${formatTime(remainingTime)}`;
+        }
+    }
+
+    const timerInterval = setInterval(updateTimer, 1000);
+    updateTimer(); // Chama imediatamente para evitar atraso
+  }
+
 
   // Core spin function (called from onclick)
   window.spinRoulette = function(rouletteId, msgId, btnId){
@@ -651,8 +594,30 @@
   };
 
   // Funções de Inicialização (código omitido para brevidade, mantendo-se o anterior)
-  function initRoleta(id){} // Definição completa necessária
-  function lockButtonUntil(btn, timerDiv, lockedUntil){} // Definição completa necessária
+  function initRoleta(id){
+    const roulette = document.getElementById(id);
+    const btn = document.getElementById('spinBtn' + id.replace('roulette', ''));
+    const timerDiv = document.getElementById('timer' + id.replace('roulette', ''));
+    const triesSpan = document.getElementById('tries' + id.replace('roulette', ''));
+
+    const lockedUntil = parseInt(localStorage.getItem(keyLockedUntil(id))) || 0;
+    const tries = parseInt(localStorage.getItem(keyTries(id))) || 0;
+
+    triesSpan.textContent = tries;
+
+    if (lockedUntil > nowMs()) {
+        lockButtonUntil(btn, timerDiv, lockedUntil);
+    } else {
+        if (tries >= MAX_TRIES) {
+             btn.disabled = true;
+             btn.textContent = 'ESGOTADAS AS TENTATIVAS';
+        } else {
+            btn.disabled = false;
+            btn.textContent = 'GIRAR ROLETA';
+        }
+    }
+  }
+
   function updateProPackTitle(){
     const proTitle = document.getElementById('roulette3-title');
     if(!proTitle) return;
@@ -660,11 +625,7 @@
   }
 
   function initAll(){
-    ['roulette1','roulette2','roulette3'].forEach(id => {
-      // Re-implementação simplificada para initRoleta e lockButtonUntil para o código completo.
-      // O código JS completo com essas funções está na resposta anterior.
-      // Para manter a resposta concisa, estou usando o código anterior como referência para estas chamadas.
-    });
+    ['roulette1','roulette2','roulette3'].forEach(initRoleta);
     updateProPackTitle();
 
     ['spinBtn1','spinBtn2','spinBtn3'].forEach(btnId => {
@@ -673,8 +634,8 @@
     });
   }
 
-  // document.addEventListener('DOMContentLoaded', initAll); // Comentado, pois o DOMContentLoaded foi usado para áudio
-  // window.addEventListener('pageshow', initAll); // Comentado
+  document.addEventListener('DOMContentLoaded', initAll); 
+  window.addEventListener('pageshow', initAll); 
 })();
 </script>
 </body>
