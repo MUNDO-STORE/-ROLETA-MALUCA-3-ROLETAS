@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>SUPER ROLETA MALUCA! BOA SORTE</title>
+
+<style>
+  :root{
+    --bg:#f4f4f9;
+    --card:#ffffff;
+    --accent:#ffcc00;
+    --success:#1fa81f;
+    --danger:#d62828;
+    --gold:#DAA520;
+    --btn-green:#009900;
+    --btn-green-dark:#007700;
+    /* Novas cores para o botão profissional */
+    --pro-green: #28a745; 
+    --pro-green-dark: #1e7e34;
+    --pro-shadow: rgba(0, 0, 0, 0.2);
+  }
+
+  body{
+    margin:0;
+    font-family: Arial, sans-serif;
+    background:var(--bg);
+    color:#111;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .container{
+    max-width:960px;
+    margin:24px auto;
+    background:var(--card);
+    padding:28px;
+    border-radius:12px;
+    box-shadow:0 6px 22px rgba(0,0,0,0.08);
+    text-align:center;
+  }
+
+  h1{ font-size:28px; margin:6px 0 4px; color:#d60000; font-weight:700; }
+  /* Ajuste a margem superior do h2 para acomodar o novo subtítulo */
+  h2{ font-size:16px; margin:10px 0 18px; color:#444; font-weight:700; } 
+  .title-line{ width:100%; height:6px; background:var(--accent); border-radius:6px; margin:14px 0 24px; }
+
+  .roulette-row{
+    display:flex;
+    gap:20px;
+    justify-content:center;
+    flex-wrap:wrap;
+    align-items:flex-start;
+  }
+
+  .roulette-box{
+    width:320px;
+    padding:18px;
+    border-radius:12px;
+    background:#fafafa;
+    border:1px solid #e6e6e6;
+    position:relative;
+  }
+
+  .roulette-title{
+    font-size:15px;
+    font-weight:700;
+    margin-bottom:12px;
+    min-height:48px;
+  }
+
+  /* CSS para a legenda */
+  .legend{
+    margin: -10px auto 20px;
+    font-weight:700;
+    background:#fff8d1;
+    border:1px solid #ffe38a;
+    border-radius:10px;
+    padding:10px;
+    font-size:14px;
+    width: fit-content;
+  }
+  .legend span.green{ color:var(--success); font-weight: 800; }
+  .legend span.red{ color:var(--danger); font-weight: 800; }
+
+  .roulette-display {
+    width: 250px;
+    height: 250px;
+    margin: 0 auto;
+    position: relative; 
+  }
+
+  /* roleta */
+  .roulette{
+    width:100%;
+    height:100%;
+    border-radius:50%;
+    border:5px solid var(--gold);
+    overflow:hidden;
+    background: conic-gradient(
+      #4CAF50 0% 16.6%,
+      #f44336 16.6% 33.3%,
+      #4CAF50 33.3% 50%,
+      #f44336 50% 66.6%,
+      #4CAF50 66.6% 83.3%,
+      #f44336 83.3% 100%
+    );
+    transition: transform 4s ease-out;
+  }
+
+  /* INDICADOR FIXO (dourado) - TOPO */
+  .pointer-fixed{
+    position:absolute;
+    top: 0px; 
+    left:50%;
+    transform:translateX(-50%); 
+    z-index:100; 
+    width:0;
+    height:0;
+    border-left:14px solid transparent;
+    border-right:14px solid transparent;
+    border-bottom:28px solid var(--gold); 
+    filter:drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+  }
+
+  /* botão girar e estado bloqueado + contador */
+  .button{
+    margin-top:12px;
+    padding:12px;
+    width:85%;
+    max-width:420px;
+    background:var(--accent);
+    color:#000;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:700;
+    font-size:15px;
+  }
+  .button[disabled]{ background:#cccccc; cursor:not-allowed; }
+
+  .timer {
+    margin-top:10px;
+    font-weight:700;
+    font-size:14px;
+    color:#333;
+  }
+
+  /* ### ESTILOS PROFISSIONAIS PARA O BOTÃO FINAL ### 
+  */
+  .purchase-btn{
+    display:block;
+    margin:16px auto;
+    padding:14px;
+    width:90%;
+    max-width:520px;
+    background:var(--pro-green); /* Tom de verde profissional */
+    color:#fff;
+    border:none;
+    border-radius:10px;
+    font-size:18px; /* Aumentado um pouco para destaque */
+    font-weight:800; /* Mais negrito */
+    text-decoration:none;
+    cursor:pointer;
+    line-height: 1.3; 
+    white-space: pre-wrap;
+    
+    /* Aparência profissional */
+    box-shadow: 0 4px 6px var(--pro-shadow); 
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    text-align: center;
+  }
+  .purchase-btn:hover{ 
+    background:var(--pro-green-dark); 
+    transform: translateY(-2px);
+    box-shadow: 0 6px 10px var(--pro-shadow); 
+  }
+  
+  /* ESTILO ESPECÍFICO PARA O BOTÃO SEM DESCONTO */
+  .no-discount-btn {
+    margin-top: 40px; /* Mais separação das roletas */
+    padding: 22px 14px; /* Mais padding vertical */
+    border: 2px solid #ffffff00; /* Borda sutil para dar acabamento */
+  }
+
+
+  /* responsive */
+  @media (max-width:740px){
+    .roulette-row{ flex-direction:column; align-items:center; }
+    .roulette-box{ width:92%; }
+  }
+
+</style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>SUPER ROLETA MALUCA! BOA SORTE!</h1>
+    
+    <h2>QUALQUER UMA DAS ROLETA SE GANHAR! VOCÊ COMPRA COM SUPER DESCONTO! SE GANHAR QUEM QUALQUER ROLETA VOCÊ SERÁ DIRECIONADO AUTOMATICAMENTE PARA MEU WHATSAPP! BOA SORTE!</h2>
+    
+    <div class="title-line"></div>
+    
+    <div class="legend">
+      <span class="green">VERDE: VOCÊ GANHA!</span><br>
+      <span class="red">VERMELHO: NÃO GANHA!</span>
+    </div>
+    <div class="roulette-row">
+
+      <div class="roulette-box">
+        <div class="roulette-title">
+          SORTEIO PACK COM MAIS 15 MIL MÚSICAS + VIDEOCLIPES — PAGA APENAS R$1,00 SE GANHAR!
+        </div>
+
+        <div class="roulette-display">
+            <div class="pointer-fixed" aria-hidden="true"></div>
+
+            <div id="roulette1" class="roulette" data-roleta="1" data-redirect="https://wa.link/ynmzjk" data-price="R$1,00"></div>
+        </div>
+        
+        <p id="msg1" style="min-height:22px; margin-top:12px; font-weight:700;"></p>
+
+        <div style="margin-top:6px; font-size:13px; color:#333; font-weight:700;">
+          Tentativas usadas: <span id="tries1">0</span>/3
+        </div>
+
+        <button id="spinBtn1" class="button" onclick="spinRoulette('roulette1','msg1','spinBtn1')">GIRAR ROLETA</button>
+
+        <div id="timer1" class="timer" aria-live="polite"></div>
+      </div>
+
+      <div class="roulette-box">
+        <div class="roulette-title">
+          PACK 25 MIL MÚSICAS + VIDEOCLIPES — SE GANHAR PAGA APENAS R$4,00!
+        </div>
+
+        <div class="roulette-display">
+            <div class="pointer-fixed" aria-hidden="true"></div>
+
+            <div id="roulette2" class="roulette" data-roleta="2" data-redirect="https://wa.link/xyrsse" data-price="R$4,00"></div>
+        </div>
+
+        <p id="msg2" style="min-height:22px; margin-top:12px; font-weight:700;"></p>
+
+        <div style="margin-top:6px; font-size:13px; color:#333; font-weight:700;">
+          Tentativas usadas: <span id="tries2">0</span>/3
+        </div>
+
+        <button id="spinBtn2" class="button" onclick="spinRoulette('roulette2','msg2','spinBtn2')">GIRAR ROLETA</button>
+
+        <div id="timer2" class="timer" aria-live="polite"></div>
+      </div>
+
+      <div class="roulette-box">
+        <div class="roulette-title" id="roulette3-title">
+          PACK PROFISSIONAL DJ — SE GANHAR PAGA R$45,00!
+        </div>
+
+        <div class="roulette-display">
+            <div class="pointer-fixed" aria-hidden="true"></div>
+
+            <div id="roulette3" class="roulette" data-roleta="3" data-redirect="https://wa.link/dxedm2" data-price="R$45,00"></div>
+        </div>
+
+        <p id="msg3" style="min-height:22px; margin-top:12px; font-weight:700;"></p>
+
+        <div style="margin-top:6px; font-size:13px; color:#333; font-weight:700;">
+          Tentativas usadas: <span id="tries3">0</span>/3
+        </div>
+
+        <button id="spinBtn3" class="button" onclick="spinRoulette('roulette3','msg3','spinBtn3')">GIRAR ROLETA</button>
+
+        <div id="timer3" class="timer" aria-live="polite"></div>
+      </div>
+
+    </div> <button class="purchase-btn no-discount-btn" onclick="window.open('https://wa.link/l4olzf','_blank')">
+      CASO NÃO GANHOU NENHUM DESCONTO CLICK AQUI PARA COMPRAR NO VALOR SEM DESCONTO!<br>
+      PACK 15 MIL MÚSICAS + VIDEOCLIPES R$4,00 PAGAMENTO PIX!<br>
+      PACK 25 MIL MÚSICAS + VIDEOCLIPES R$8,00 PAGAMENTO PIX!<br>
+      PACK PROFISSIONAL DJ R$60,00 PAGAMENTO PIX!
+    </button>
+    <div style="height:10px;"></div>
+
+  </div> <script>
+/*
+  Parte 2/2 - Lógica de roletas:
+*/
+
+(function(){
+
+  // Config
+  const MAX_TRIES = 3;
+  const LOCK_MINUTES = 5;
+  const animationTime = 4200; // ms - duração do giro (coincide com CSS transition)
+
+  // Util helpers
+  function nowMs(){ return Date.now(); }
+  function keyTries(id){ return `roleta_tries_${id}`; }
+  function keyLockedUntil(id){ return `roleta_lockedUntil_${id}`; }
+
+  // Inicializa UI e estados ao carregar
+  function initRoleta(id){
+    const roulette = document.getElementById(id);
+    const btn = document.getElementById('spinBtn' + id.replace('roulette',''));
+    const msg = document.getElementById('msg' + id.replace('roulette',''));
+    const triesSpan = document.getElementById('tries' + id.replace('roulette',''));
+    const timerDiv = document.getElementById('timer' + id.replace('roulette',''));
+
+    // Load tries from localStorage
+    let tries = parseInt(localStorage.getItem(keyTries(id))) || 0;
+    triesSpan.textContent = tries;
+
+    // Check if locked
+    let lockedUntil = parseInt(localStorage.getItem(keyLockedUntil(id))) || 0;
+    if(lockedUntil && lockedUntil > nowMs()){
+      lockButtonUntil(btn, timerDiv, lockedUntil);
+    } else {
+      // not locked -> ensure enabled
+      btn.disabled = false;
+      timerDiv.textContent = '';
+      // Save cleared lock if expired
+      localStorage.removeItem(keyLockedUntil(id));
+    }
+  }
+
+  // Format mm:ss
+  function formatMsToMMSS(ms){
+    if(ms < 0) ms = 0;
+    const total = Math.ceil(ms / 1000);
+    const mm = Math.floor(total / 60);
+    const ss = total % 60;
+    return `${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+  }
+
+  // Lock UI for a given button until timestamp (ms)
+  function lockButtonUntil(btn, timerDiv, lockedUntil){
+    btn.disabled = true;
+    // Update every second
+    const update = () => {
+      const rem = lockedUntil - nowMs();
+      if(rem <= 0){
+        clearInterval(interval);
+        btn.disabled = false;
+        timerDiv.textContent = '';
+        // reset tries count so user can try again
+        const idSuffix = btn.id.replace('spinBtn','');
+        const rid = 'roulette' + idSuffix;
+        localStorage.setItem(keyTries(rid), 0);
+        document.getElementById('tries' + idSuffix).textContent = 0;
+        localStorage.removeItem(keyLockedUntil(rid));
+        btn.textContent = 'GIRAR ROLETA';
+        return;
+      }
+      // show on button and in timerDiv
+      const mmss = formatMsToMMSS(rem);
+      btn.textContent = `Aguarde ${mmss} para tentar novamente`;
+      timerDiv.textContent = `Aguarde ${mmss} para tentar novamente`;
+    };
+    update();
+    const interval = setInterval(update, 1000);
+  }
+
+  // Core spin function (called from onclick)
+  window.spinRoulette = function(rouletteId, msgId, btnId){
+    const roulette = document.getElementById(rouletteId);
+    const msg = document.getElementById(msgId);
+    const btn = document.getElementById(btnId);
+
+    // check lock
+    const lockedUntil = parseInt(localStorage.getItem(keyLockedUntil(rouletteId))) || 0;
+    if(lockedUntil && lockedUntil > nowMs()){
+      // already locked, display message (button UI managed by lockButtonUntil)
+      return;
+    }
+
+    // prevent double clicks while animating
+    if(btn.disabled) return;
+    btn.disabled = true;
+
+    // load tries
+    let tries = parseInt(localStorage.getItem(keyTries(rouletteId))) || 0;
+    const triesSpan = document.getElementById('tries' + btnId.replace('spinBtn',''));
+
+    // start spin animation
+    // Determinar vitória aleatória (você pode ajustar probabilidade)
+    const winChance = 0.5; // 50% por padrão
+    const win = Math.random() < winChance;
+
+    // Choose final angle depending win/lose
+    const anglesWin = [330, 90, 210];
+    const anglesLose = [30, 150, 270];
+    const chosenBaseAngle = win ?
+      anglesWin[Math.floor(Math.random() * anglesWin.length)]
+      : anglesLose[Math.floor(Math.random() * anglesLose.length)];
+    const variation = Math.floor(Math.random() * 50) - 25;
+    const chosenStopAngle = chosenBaseAngle + variation;
+    const fullRotations = 360 * (8 + Math.floor(Math.random()*3)); // 8-10 rotations
+    const finalAngle = fullRotations + chosenStopAngle;
+
+    // Apply rotation (CSS transition defined in Part1)
+    roulette.style.transition = `transform ${animationTime}ms cubic-bezier(.22,.98,.35,1)`;
+    roulette.style.transform = `rotate(${finalAngle}deg)`;
+
+    // Clear message while spinning
+    msg.innerHTML = '';
+
+    // After animation completes
+    setTimeout(() => {
+      // fix rotation to the visual stopping angle (remove extra rotations)
+      roulette.style.transition = 'none';
+      roulette.style.transform = `rotate(${chosenStopAngle}deg)`;
+
+      // increment tries only if result is lose; if win we'll treat differently
+      if(win){
+        // show win message and redirect to the roleta's redirect URL
+        msg.innerHTML = `<span style="color:var(--success); font-weight:800;">VOCÊ GANHOU! PAGAR ${roulette.dataset.price} 🎉</span>`;
+        // reset tries for this roleta
+        localStorage.setItem(keyTries(rouletteId), 0);
+        triesSpan.textContent = 0;
+        // small delay to let user see message, then redirect
+        setTimeout(() => {
+          // redirect to the configured link (same tab)
+          window.location.href = roulette.dataset.redirect;
+        }, 900);
+        // re-enable button after short delay (no lock)
+        setTimeout(()=>{ btn.disabled = false; btn.textContent = 'GIRAR ROLETA'; }, 1200);
+        return;
+      } else {
+        // Lost - increment tries
+        tries = tries + 1;
+        localStorage.setItem(keyTries(rouletteId), tries);
+        triesSpan.textContent = tries;
+        msg.innerHTML = `<span style="color:var(--danger); font-weight:800;">NÃO GANHOU! ❌</span>`;
+
+        // If tries reached MAX_TRIES -> lock for LOCK_MINUTES
+        if(tries >= MAX_TRIES){
+          const lockedUntilTs = nowMs() + LOCK_MINUTES * 60 * 1000;
+          localStorage.setItem(keyLockedUntil(rouletteId), lockedUntilTs);
+          // start lock UI
+          const timerDiv = document.getElementById('timer' + btnId.replace('spinBtn',''));
+          lockButtonUntil(btn, timerDiv, lockedUntilTs);
+        } else {
+          // allow next attempt (enable button)
+          btn.disabled = false;
+          btn.textContent = 'GIRAR ROLETA';
+        }
+      }
+    }, animationTime + 50);
+  };
+
+  // A função updateProPackTitle foi esvaziada, e o texto da roleta 3 foi corrigido para o original.
+  function updateProPackTitle(){
+    const proTitle = document.getElementById('roulette3-title');
+    if(!proTitle) return;
+    proTitle.innerText = 'PACK PROFISSIONAL DJ — SE GANHAR PAGA R$45,00!'; 
+  }
+
+  // On load init all roletas
+  function initAll(){
+    ['roulette1','roulette2','roulette3'].forEach(id => initRoleta(id));
+    updateProPackTitle();
+
+    // Also ensure the buttons show default text if not locked
+    ['spinBtn1','spinBtn2','spinBtn3'].forEach(btnId => {
+      const b = document.getElementById(btnId);
+      if(b && !b.disabled) b.textContent = 'GIRAR ROLETA';
+    });
+
+    // If any roleta already locked on load, trigger lock UI to show timer
+    ['roulette1','roulette2','roulette3'].forEach(rid => {
+      const lockedUntil = parseInt(localStorage.getItem(keyLockedUntil(rid))) || 0;
+      if(lockedUntil && lockedUntil > nowMs()){
+        const suffix = rid.replace('roulette','');
+        lockButtonUntil(document.getElementById('spinBtn' + suffix), document.getElementById('timer' + suffix), lockedUntil);
+      }
+    });
+  }
+
+  // Run init on DOMContentLoaded
+  document.addEventListener('DOMContentLoaded', initAll);
+
+  // Accessibility: if page is shown after back/forward, re-init timers
+  window.addEventListener('pageshow', initAll);
+
+})();
+</script>
+</body>
+</html>
